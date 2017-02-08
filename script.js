@@ -1,16 +1,35 @@
 var gameContainer = document.getElementById("gameContainer");
 
+gameContainer.chancesLeft = document.getElementById("chancesLeft");
+
 gameContainer.minSquidLength = 2;
 gameContainer.squidNum = 3;
-gameContainer.gridNum = 7;
+gameContainer.gridNum = 8;
 
-gameContainer.chances = 20;
-
-gameContainer.squidArray = [];
-gameContainer.gridArray = [];
+gameContainer.chances = 24;
 
 function setup(){
-	// 7x7 grid setup
+	gameContainer.squidArray = [];
+    gameContainer.gridArray = [];
+	gameContainer.chancesLeft.innerHTML = gameContainer.chances;
+	
+	// bomb grid setup
+	var counter = 0;
+	var counterDiv = document.getElementById("counter");
+	for (var i = 0; i < 8; i++){
+		var bombContainer = document.createElement("div");
+		counterDiv.appendChild(bombContainer);
+		for (var j = 0; j < 3; j++){
+			var bomb = document.createElement("div");
+			bomb.setAttribute("id", "bomb" + counter);
+			bomb.setAttribute("class", "bomb");
+			bomb.innerHTML = counter;
+			bombContainer.appendChild(bomb);
+			counter++;
+		}
+	}
+	
+	// 8x8 grid setup
 	for (var i  = 0; i < gameContainer.gridNum; i++){
 		var gridContainer = document.createElement("div");
 		gridContainer.setAttribute("class", "container");
@@ -40,6 +59,15 @@ function setup(){
 		gameContainer.squidArray.push(squid);
 		
 		decideLocation(squid);
+	}
+	
+	// squid symbol setup
+	for (var i = 0; i < 3; i++){
+		var squid = document.createElement("div");
+		squid.setAttribute("id", "squid_" + i);
+		squid.setAttribute("class", "squid");
+		squid.hit = 0;
+		document.getElementById("squidSymbol").appendChild(squid);
 	}
 }
 
@@ -110,6 +138,7 @@ function buttonClicked(e){
 	if (target.clicked) return;
 	
 	gameContainer.chances--;
+	gameContainer.chancesLeft.innerHTML = gameContainer.chances;
 	if (gameContainer.chances == 0){
 		// remove listeners
 		for (var i = 0; i < gameContainer.gridNum; i++){
@@ -122,13 +151,24 @@ function buttonClicked(e){
 	target.clicked = 1;
 	
 	if (target.occupied){
-		target.style.backgroundColor = "red";
+		target.style.backgroundImage = "url('Assets/hit.png')";
 		gameContainer.squidArray[target.belongTo].numClicked++;
 	} else {
-		target.style.backgroundColor = "blue";
+		target.style.backgroundImage = "url('Assets/miss.png')";
 	}
 	
 	checkEndGame();
+}
+
+function changeSquidSymbol(){
+	for (var i = 0; i < gameContainer.squidNum; i++){
+		var squid = document.getElementById("squid_" + i);
+		if (!squid.hit){
+			squid.style.backgroundImage = "url('Assets/squid_hit.png')";
+			squid.hit = 1;
+			break;
+		}
+	}
 }
 
 function checkEndGame(){
@@ -136,6 +176,7 @@ function checkEndGame(){
 		if (gameContainer.squidArray[i].complete) continue;
 		if (gameContainer.squidArray[i].numClicked == gameContainer.squidArray[i].length){
 			gameContainer.squidArray[i].complete = 1;
+			changeSquidSymbol();
 			gameContainer.squidArray.completedSquid++;
 		}
 	}
@@ -145,9 +186,11 @@ function checkEndGame(){
 
 function endGame(){
 	if (gameContainer.squidArray.completedSquid == gameContainer.squidArray.length){
-		console.log("YOU WON!");
+		setTimeout(function(){
+			alert("YOU WON!"); 
+		}, 200);
 	} else if (gameContainer.chances == 0) {
-		console.log("sorry you lost");
+		alert("sorry you lost");
 	}
 }
 
