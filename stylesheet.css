@@ -1,5 +1,6 @@
 div.counter{
 	background-color: transparent;
+	width: 200px;
 	float: left;
 }
 
@@ -7,13 +8,19 @@ div.container{
 	background-color: transparent;
 	width: 500px;
 	float: left;
-	margin-left: 50px;
+	margin-left: 30px;
 }
 
 div.symbol{
 	background-color: transparent;
+	width: 60px;
 	float: left;
 	margin-left: 50px;
+}
+
+div.bombContainer{
+	float: right;
+	width: 60px;
 }
 
 div.bomb{
@@ -21,14 +28,12 @@ div.bomb{
 	height: 50px;
 	margin: 2px;
 	background-image: url("Assets/bomb_unused.png");
-	display: inline-table;
 }
 
 div.button{
 	width: 50px;
 	height: 50px;
 	margin: 2px;
-	border: 1px solid transparent;
 	background-color: #6695e2;
 	display: inline-table;
 }
