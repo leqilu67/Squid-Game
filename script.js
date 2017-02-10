@@ -9,7 +9,20 @@ gameContainer.gridNum = 8;
 gameContainer.maxBomb = 24;
 gameContainer.chances = 24;
 
-function setup(){
+//preload images before setting up game
+gameContainer.preload = function(){
+	var images = new Array();
+	for (var i = 0; i < gameContainer.preload.arguments.length; i++){
+		images[i] = new Image();
+		images[i].src = gameContainer.preload.arguments[i];
+	}
+
+	if (images.length == gameContainer.preload.arguments.length){
+		gameContainer.setup();
+	}
+}
+
+gameContainer.setup = function(){
 	gameContainer.squidArray = [];
     gameContainer.gridArray = [];
 	gameContainer.chancesLeft.innerHTML = "Bombs used: 0";
@@ -44,7 +57,7 @@ function setup(){
 			grid.col = j;
 			grid.occupied = 0;
 			grid.clicked = 0;
-			grid.addEventListener("click", buttonClicked);
+			grid.addEventListener("click", gameContainer.buttonClicked);
 			gridContainer.appendChild(grid);
 		}
 	}
@@ -53,15 +66,15 @@ function setup(){
 	for (var i = 0; i < gameContainer.squidNum; i++){
 		var squid = new Object();
 		// direction of squid: 0 = horizontal, 1 = vertical
-		squid.direction = getRandomInt(0, 1);
+		squid.direction = gameContainer.getRandomInt(0, 1);
 		squid.length = i + gameContainer.minSquidLength;
-		//squid.num: 0= length 2; 1= length 3; 2= length 4;
+		// squid.num: 0= length 2; 1= length 3; 2= length 4;
 		squid.num = i; 
 		
 		gameContainer.squidArray.completedSquid = 0;
 		gameContainer.squidArray.push(squid);
 		
-		decideLocation(squid);
+		gameContainer.decideLocation(squid);
 	}
 	
 	// squid symbol setup
@@ -74,10 +87,10 @@ function setup(){
 	}
 }
 
-function decideLocation(squid){
+gameContainer.decideLocation = function(squid){
 	if (squid.direction == 0){ //horizontal
-		squid.x = getRandomInt(0, gameContainer.gridNum - 1 - squid.length);
-		squid.y = getRandomInt(0, gameContainer.gridNum - 1);
+		squid.x = gameContainer.getRandomInt(0, gameContainer.gridNum - 1 - squid.length);
+		squid.y = gameContainer.getRandomInt(0, gameContainer.gridNum - 1);
 		
 		gameContainer.gridArray = [];
 		for (var i = 0; i < squid.length; i++){
@@ -91,9 +104,9 @@ function decideLocation(squid){
 		gameContainer.squidArray[squid.num].direction = squid.direction;
 		gameContainer.squidArray[squid.num].startingPostion = {x: squid.x, y: squid.y};
 			
-		if (conflict(gameContainer.gridArray)){
+		if (gameContainer.conflict(gameContainer.gridArray)){
 			gameContainer.gridArray = [];
-			decideLocation(squid);
+			gameContainer.decideLocation(squid);
 		} else {
 			var parts = 0;
 			for (var i = 0; i < gameContainer.gridArray.length; i++){
@@ -102,7 +115,7 @@ function decideLocation(squid){
 				var backgroundImageURL = "Assets/squid_" + squid.num + "_" + parts + ".png";
 				parts++;
 				gameContainer.gridArray[i].backgroundImage = "url(" + backgroundImageURL + ")";
-				rotateImage(gameContainer.gridArray[i], -90);
+				gameContainer.rotateImage(gameContainer.gridArray[i], -90);
 				
 				gameContainer.gridArray[i].belongTo = squid.num;
 				gameContainer.squidArray[squid.num].push(gameContainer.gridArray[i]);
@@ -110,8 +123,8 @@ function decideLocation(squid){
 		}
 		
 	} else { //vertical	
-		squid.x = getRandomInt(0, gameContainer.gridNum - 1);
-		squid.y = getRandomInt(0, gameContainer.gridNum - 1 - squid.length);
+		squid.x = gameContainer.getRandomInt(0, gameContainer.gridNum - 1);
+		squid.y = gameContainer.getRandomInt(0, gameContainer.gridNum - 1 - squid.length);
 		
 		gameContainer.gridArray = [];
 		for (var i = 0; i < squid.length; i++){
@@ -125,9 +138,9 @@ function decideLocation(squid){
 		gameContainer.squidArray[squid.num].direction = squid.direction;
 		gameContainer.squidArray[squid.num].startingPostion = {x: squid.x, y: squid.y};
 		
-		if (conflict(gameContainer.gridArray)){
+		if (gameContainer.conflict(gameContainer.gridArray)){
 			gameContainer.gridArray = [];
-			decideLocation(squid);
+			gameContainer.decideLocation(squid);
 		} else {
 			var parts = 0;
 			for (var i = 0; i < gameContainer.gridArray.length; i++){
@@ -144,7 +157,7 @@ function decideLocation(squid){
 	}	
 }
 
-function conflict(gridArray){
+gameContainer.conflict = function(gridArray){
 	for (var i = 0; i < gridArray.length; i++){
 		if (gridArray[i].occupied)
 			return true;
@@ -153,7 +166,7 @@ function conflict(gridArray){
 	return false;
 }
 
-function buttonClicked(e){	
+gameContainer.buttonClicked = function(e){	
 	var target = e.target;
 	
 	if (target.clicked) return;
@@ -167,7 +180,7 @@ function buttonClicked(e){
 		// remove listeners
 		for (var i = 0; i < gameContainer.gridNum; i++){
 			for (var j = 0; j < gameContainer.gridNum; j++){
-				document.getElementById("button" + j + i).removeEventListener("click", buttonClicked);
+				document.getElementById("button" + j + i).removeEventListener("click", gameContainer.buttonClicked);
 			}
 		}
 	}
@@ -181,10 +194,10 @@ function buttonClicked(e){
 		target.style.backgroundImage = "url('Assets/miss.png')";
 	}
 	
-	checkEndGame();
+	gameContainer.checkEndGame();
 }
 
-function changeSquidSymbol(){
+gameContainer.changeSquidSymbol = function(){
 	for (var i = 0; i < gameContainer.squidNum; i++){
 		var squid = document.getElementById("squid_" + i);
 		if (!squid.hit){
@@ -195,7 +208,7 @@ function changeSquidSymbol(){
 	}
 }
 
-function showLocations(){
+gameContainer.showLocations = function(){
 	for (var i = 0; i < gameContainer.squidArray.length; i++){
 		var squid = gameContainer.squidArray[i];
 		if (squid.direction == 0){
@@ -203,7 +216,7 @@ function showLocations(){
 				var backgroundImageURL = "Assets/squid_" + i + "_" + j + ".png";			
 				var grid = document.getElementById("button" + (squid.startingPostion.x + j) + squid.startingPostion.y);
 				grid.style.backgroundImage = "url(" + backgroundImageURL + ")";
-				rotateImage(grid, -90);
+				gameContainer.rotateImage(grid, -90);
 			}
 			
 		} else {
@@ -216,7 +229,7 @@ function showLocations(){
 	}
 }
 
-function rotateImage(grid, deg){
+gameContainer.rotateImage = function(grid, deg){
 	grid.style.webkitTransform = "rotate(" + deg + "deg)";
 	grid.style.mozTransform = "rotate(" + deg + "deg)";
 	grid.style.msTransform = "rotate(" + deg + "deg)";
@@ -224,56 +237,70 @@ function rotateImage(grid, deg){
 	grid.style.transform = "rotate(" + deg + "deg)";
 }
 
-function checkEndGame(){
+gameContainer.checkEndGame = function(){
 	for (var i = 0; i < gameContainer.squidArray.length; i++){
 		if (gameContainer.squidArray[i].complete) continue;
 		if (gameContainer.squidArray[i].numClicked == gameContainer.squidArray[i].length){
 			gameContainer.squidArray[i].complete = 1;
-			changeSquidSymbol();
+			gameContainer.changeSquidSymbol();
 			gameContainer.squidArray.completedSquid++;
 		}
 	}
 	
-	endGame();
+	gameContainer.endGame();
 }
 
-function endGame(){
+gameContainer.endGame = function(){
 	if (gameContainer.squidArray.completedSquid == gameContainer.squidArray.length){
-		showLocations();
+		gameContainer.showLocations();
 		setTimeout(function(){
 			if(confirm("You won! Your score is " + (gameContainer.maxBomb - gameContainer.chances) + ". Replay?")){
-				reset();
+				gameContainer.reset();
 			}
 		}, 200);
 	} else if (gameContainer.chances == 0) {
-		showLocations();
+		gameContainer.showLocations();
 		setTimeout(function(){
 			if (confirm("Aww almost! Try again?")){
-				reset();
+				gameContainer.reset();
 			}
 		}, 200);
 	}
 }
 
-function reset(){
-	removeChildrenNodes(document.getElementById("counter"));
-	removeChildrenNodes(document.getElementById("gameContainer"));
-	removeChildrenNodes(document.getElementById("squidSymbol"));
+gameContainer.reset = function(){
+	gameContainer.removeChildrenNodes(document.getElementById("counter"));
+	gameContainer.removeChildrenNodes(document.getElementById("gameContainer"));
+	gameContainer.removeChildrenNodes(document.getElementById("squidSymbol"));
 	
 	gameContainer.maxBomb = 24;
 	gameContainer.chances = 24;
 	
-	setup();
+	gameContainer.setup();
 }
 
-function getRandomInt(min, max){
+gameContainer.getRandomInt = function(min, max){
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function removeChildrenNodes(parentNode){
+gameContainer.removeChildrenNodes = function(parentNode){
 	while (parentNode.hasChildNodes()) {
 		parentNode.removeChild(parentNode.lastChild);
 	}
 }
 
-window.onload = setup();
+window.onload = gameContainer.preload("Assets/bomb_unused.png",
+		"Assets/bomb_used.png",
+		"Assets/hit.png",
+		"Assets/miss.png",
+		"Assets/squid_0_0.png",
+		"Assets/squid_0_1.png",
+		"Assets/squid_1_0.png",
+		"Assets/squid_1_1.png",
+		"Assets/squid_1_2.png",
+		"Assets/squid_2_0.png",
+		"Assets/squid_2_1.png",
+		"Assets/squid_2_2.png",
+		"Assets/squid_2_3.png",
+		"Assets/squid_hit.png",
+		"Assets/squid_symbol.png");
