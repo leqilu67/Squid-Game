@@ -25,7 +25,7 @@ gameContainer.preload = function(){
 gameContainer.setup = function(){
 	gameContainer.squidArray = [];
     gameContainer.gridArray = [];
-	gameContainer.chancesLeft.innerHTML = "Bombs used: 0";
+	gameContainer.chancesLeft.innerHTML = "Cannon Balls used: 0";
 	
 	// bomb grid setup
 	var counter = gameContainer.chances;
@@ -174,7 +174,7 @@ gameContainer.buttonClicked = function(e){
 	document.getElementById("bomb"+gameContainer.chances).style.backgroundImage = "url('Assets/bomb_used.png')";
 
 	gameContainer.chances--;
-	gameContainer.chancesLeft.innerHTML = "Bombs used: " + (gameContainer.maxBomb - gameContainer.chances);
+	gameContainer.chancesLeft.innerHTML = "Cannon Balls used: " + (gameContainer.maxBomb - gameContainer.chances);
 	
 	if (gameContainer.chances == 0){
 		// remove listeners
@@ -254,7 +254,7 @@ gameContainer.endGame = function(){
 	if (gameContainer.squidArray.completedSquid == gameContainer.squidArray.length){
 		gameContainer.showLocations();
 		setTimeout(function(){
-			if(confirm("You won! Your score is " + (gameContainer.maxBomb - gameContainer.chances) + ". Replay?")){
+			if(confirm("You did it! You used " + (gameContainer.maxBomb - gameContainer.chances) + " cannon balls to defeat all the monsters. Replay?")){
 				gameContainer.reset();
 			}
 		}, 200);
